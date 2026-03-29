@@ -38,8 +38,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Process 11.csv
-filename = "mediciones/3.csv"
-output_name = "processed_11.csv"  # Change this name as needed
+filename = "measurements/6.csv"
 
 # Read CSV, skip first 2 rows (headers)
 data = pd.read_csv(filename, skiprows=2, header=None)
@@ -62,27 +61,24 @@ plt.xlabel('Frequency (MHz)')
 plt.ylabel('Amplitude (dBm)')
 plt.title('Frequency Spectrum')
 plt.grid(True)
+plt.savefig('plots/ramp_sym-50_M.png')
 plt.show()
 
-# %%
-# Save to CSV
-np.savetxt(output_name, processed_data, delimiter=',', header='Frequency_GHz,Amplitude_dBm', comments='')
-print(f"Data saved to {output_name}")
 
 # %% [markdown]
 # Perect, vamos con todo segun la tabla
 
 # %%
-mediciones = ['11.csv', '2.csv', '3.csv', '4.csv', '5.csv', '6.csv']
-salida = ['cuadrada_25MHz.csv', 'sin_25MHz.csv', 'sin_25MHz_span_0-1GHz.csv', 'sin_5MHz.csv', 'ramp_symm_100.csv', 'ramp_symm_50.csv']
+measurements = ['11.csv', '2.csv', '3.csv', '4.csv', '5.csv', '6.csv']
+output = ['square_25MHz_M.csv', 'sin_25MHz_M.csv', 'sin_25MHz_span_0-1GHz_M.csv', 'sin_5MHz_M.csv', 'ramp_symm_100_M.csv', 'ramp_symm_50_M.csv']
 
 # Process all files
-for input_file, output_file in zip(mediciones, salida):
+for input_file, output_file in zip(measurements, output):
     # Read CSV, skip first 2 rows (headers)
-    data = pd.read_csv(f"mediciones/{input_file}", skiprows=2, header=None)
+    data = pd.read_csv(f"measurements/{input_file}", skiprows=2, header=None)
     freq_hz = data.iloc[:, 0].values.astype(float)
     amp_dbm = data.iloc[:, 2].values.astype(float)
     freq_ghz = freq_hz / 1e6
     processed_data = np.column_stack((freq_ghz, amp_dbm))
-    np.savetxt(output_file, processed_data, delimiter=',', header='Frequency_GHz,Amplitude_dBm', comments='')
+    np.savetxt('signals/'+output_file, processed_data, delimiter=',', header='Frequency_GHz,Amplitude_dBm', comments='')
     print(f"Processed {input_file} -> {output_file}")
