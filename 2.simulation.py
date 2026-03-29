@@ -22,6 +22,8 @@
 import numpy as np
 from scipy import signal
 from matplotlib import pyplot as plt
+from scipy.ndimage import gaussian_filter1d
+
 
 # %% [markdown]
 # Define attenuator
@@ -50,35 +52,81 @@ plt.show()
 #
 # %%
 
-def spectrum_fft(x, fs):
-    N = len(x)
-    window = np.hanning(N)
-    xw = x * window
-
-    X = np.fft.fft(xw)
-    freqs = np.fft.fftfreq(N, 1/fs)
-
-    mask = freqs > 0
-    return freqs[mask], X[mask]
-def fft_to_power(X, R=50):
-    mag = np.abs(X)
-    mag = mag / len(X)
-    P = (mag**2) / R
-
-    return P
-def power_to_dBm(P):
-    return 10 * np.log10(P / 1e-3)
-def spectrum_analyzer(x, fs, R=50):
-    freqs, X = spectrum_fft(x, fs)
-    P = fft_to_power(X, R)
-    P_dBm = power_to_dBm(P)
-    return freqs, P_dBm
 
 # %% [markdown]
 # Ahora paso la señal por el analizador de espectro
 #
 # %%
-ramp_sym_50 = spectrum_analyzer(coupler(x), fs)
+
+def spectrum_analyzer(
+    x, fs,
+    f_start, f_stop,
+    n_points,
+    R=50,
+    rbw_hz=100e3   # default: 100 kHz RBW (reasonable for ~200 MHz span)
+):
+    """
+    Simulates a spectrum analyzer.
+
+    Parameters:
+    - x: time-domain signal
+    - fs: sampling frequency [Hz]
+    - f_start, f_stop: frequency span [Hz]
+    - n_points: number of output points
+    - R: system impedance (default 50 ohm)
+    - rbw_hz: resolution bandwidth [Hz]
+
+    Returns:
+    processed_data = [freq_GHz, amp_dBm]
+    """
+
+    N = len(x)
+
+    # --- 1. Apply window to reduce spectral leakage ---
+    window = np.hanning(N)
+    xw = x * window
+
+    # --- 2. Compute FFT ---
+    X = np.fft.fft(xw)
+    freqs = np.fft.fftfreq(N, 1/fs)
+
+    # Keep only positive frequencies
+    mask = freqs > 0
+    freqs = freqs[mask]
+    X = X[mask]
+
+    # --- 3. Convert magnitude to power ---
+    mag = np.abs(X) / N
+    P = (mag**2) / R
+
+    # Avoid log of zero
+    P[P <= 0] = 1e-20
+
+    P_dbm = 10 * np.log10(P / 1e-3)
+
+    # --- 4. Simulate RBW (frequency-domain smoothing) ---
+    df = fs / N
+    rbw_bins = rbw_hz / df
+
+    P_dbm = gaussian_filter1d(P_dbm, sigma=rbw_bins)
+
+    # --- 5. Select analyzer span ---
+    mask_span = (freqs >= f_start) & (freqs <= f_stop)
+    freqs_span = freqs[mask_span]
+    P_span = P_dbm[mask_span]
+
+    # --- 6. Resample to match analyzer points ---
+    freqs_target = np.linspace(f_start, f_stop, n_points)
+    P_interp = np.interp(freqs_target, freqs_span, P_span)
+
+    # --- 7. Output format ---
+    freq_ghz = freqs_target / 1e9
+    processed_data = np.column_stack((freq_ghz, P_interp))
+
+    return processed_data
 
 # %%
-ramp_sym_50
+ramp_sym_50_S = spectrum_analyzer(coupler(x), fs, 0, 200e6, 100000)
+
+# %%
+plt.plot(ramp_sym_50_S[:, 0], ramp_sym_50_S[:, 1])
