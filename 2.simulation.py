@@ -32,19 +32,25 @@ from scipy.ndimage import gaussian_filter1d
 def coupler(X, attenuation_db=-20):
     H = 10**(attenuation_db / 20)
     return X * H
+# %% [markdown]
+# Time domain signals simulation
+
 # %%
 
 fs = 100e6
 t = np.arange(0, 1e-3, 1/fs)
 
-f0 = 5e6 #ramp freq =5MHz
-duty = 1          # symmetry
+f0 = 5e6          # ramp freq =5MHz
+duty = 1          # symmetry = 100%
 
-x = signal.sawtooth(2*np.pi*f0*t, width=duty)
-
+x_1 = signal.sawtooth(2*np.pi*f0*t, width=duty)
+#x_1 = x_1 * 10**1.6
 # %%
 plt.plot(t, x)
-plt.xlim(0, 0.001e-3)
+plt.xlim(0.001e-3, 0.002e-3)
+plt.title('100% symmetry sawtooth Sample from 1 to 2 ms')
+plt.xlabel('Time (ms)')
+plt.ylabel('Voltage')
 plt.show()
 
 # %% [markdown]
