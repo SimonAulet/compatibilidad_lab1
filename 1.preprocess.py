@@ -69,7 +69,7 @@ plt.show()
 # Perect, vamos con todo segun la tabla
 
 # %%
-measurements = ['11.csv', '2.csv', '3.csv', '4.csv', '5.csv', '6.csv']
+measurements = ['11.csv',       '2.csv',           '3.csv',                       '4.csv',          '5.csv',               '6.csv']
 output = ['square_25MHz_M.csv', 'sin_25MHz_M.csv', 'sin_25MHz_span_0-1GHz_M.csv', 'sin_5MHz_M.csv', 'ramp_symm_100_M.csv', 'ramp_symm_50_M.csv']
 
 # Process all files
