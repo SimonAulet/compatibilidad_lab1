@@ -184,67 +184,86 @@ plt.tight_layout()
 max_idx = x4['Amplitude_dBm'].idxmax()
 max_freq = x4.loc[max_idx, 'Frequency_MHz']
 max_amp = x4.loc[max_idx, 'Amplitude_dBm']
+max_idx2 = int(x4['Amplitude_dBm'][int(max_idx)+1 : ].idxmax()) # type: ignore
+max_freq2 = x4.loc[max_idx2, 'Frequency_MHz']
+max_amp2 = x4.loc[max_idx2, 'Amplitude_dBm']
+max_idx3 = int(x4['Amplitude_dBm'][int(max_idx2)+1 : ].idxmax()) # type: ignore
+max_freq3 = x4.loc[max_idx3, 'Frequency_MHz']
+max_amp3 = x4.loc[max_idx3, 'Amplitude_dBm']
 
 plt.annotate(f'Máximo: {max_amp:.2f} dBm\n@ {max_freq:.3f} MHz',
              xy=(max_freq, max_amp),
-             xytext=(max_freq+80, max_amp-8.2),
+             xytext=(max_freq+10, max_amp-8.2),
              arrowprops=dict(arrowstyle='->', color='darkred'),
              fontsize=20,
              color='darkred')
-
+plt.annotate(f'Máximo 2: {max_amp2:.2f} dBm\n@ {max_freq2:.3f} MHz',
+             xy=(max_freq2, max_amp2),
+             xytext=(max_freq2+10, max_amp2),
+             arrowprops=dict(arrowstyle='->', color='darkred'),
+             fontsize=20,
+             color='darkred')
+plt.annotate(f'Máximo 3: {max_amp3:.2f} dBm\n@ {max_freq3:.3f} MHz',
+             xy=(max_freq3, max_amp3),
+             xytext=(max_freq3 + 10, max_amp3+1),
+             arrowprops=dict(arrowstyle='->', color='darkred'),
+             fontsize=20,
+             color='darkred')
 plt.hlines(-20, 0, 200, 'black')
 plt.annotate('Corte de -20 dBm',
-             xy=(max_freq3, max_amp3),
+             xy=(max_freq, max_amp),
              xytext=(80, -19),
              fontsize=20)
 plt.savefig('plots/sin_25MHz.png')
 plt.show()
+
 # %% [markdown]
-# Ploteo de seno generado a 25 MHz con línea de corte a -20 y el span de $0$ a $1 \text{GHz}$
+# Ploteo de seno generado a 25 MHz con línea de corte a -20 y el span de $0$ a $1 \text{GHz}$ recortado para mostrar hasta 200MHz
 
 # %%
+x5_200MHz = x5[x5['Frequency_MHz'] <= 200]
 plt.figure(figsize=(24, 16))
-plt.plot(x5['Frequency_MHz'], x5['Amplitude_dBm'], 'b-', linewidth=1.5)
+plt.plot(x5_200MHz['Frequency_MHz'], x5_200MHz['Amplitude_dBm'], 'b-', linewidth=1.5)
 plt.title('Espectro seno con frecuencia de 25MHz y un span de 0-1 GHz', fontsize=24)
 plt.xlabel('Frecuencia (MHz)', fontsize=20)
 plt.ylabel('Amplitud (dBm)', fontsize=20)
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
 
-max_idx = x5['Amplitude_dBm'].idxmax()
-max_freq = x5.loc[max_idx, 'Frequency_MHz']
-max_amp = x5.loc[max_idx, 'Amplitude_dBm']
-max_idx2 = int(x5['Amplitude_dBm'][int(max_idx)+1 : ].idxmax()) # type: ignore
-max_freq2 = x5.loc[max_idx2, 'Frequency_MHz']
-max_amp2 = x5.loc[max_idx2, 'Amplitude_dBm']
-max_idx3 = int(x5['Amplitude_dBm'][int(max_idx2)+1 : ].idxmax()) # type: ignore
-max_freq3 = x5.loc[max_idx3, 'Frequency_MHz']
-max_amp3 = x5.loc[max_idx3, 'Amplitude_dBm']
+# max_idx = x5['Amplitude_dBm'].idxmax()
+# max_freq = x5.loc[max_idx, 'Frequency_MHz']
+# max_amp = x5.loc[max_idx, 'Amplitude_dBm']
+# max_idx2 = int(x5['Amplitude_dBm'][int(max_idx)+1 : ].idxmax()) # type: ignore
+# max_freq2 = x5.loc[max_idx2, 'Frequency_MHz']
+# max_amp2 = x5.loc[max_idx2, 'Amplitude_dBm']
+# max_idx3 = int(x5['Amplitude_dBm'][int(max_idx2)+1 : ].idxmax()) # type: ignore
+# max_freq3 = x5.loc[max_idx3, 'Frequency_MHz']
+# max_amp3 = x5.loc[max_idx3, 'Amplitude_dBm']
 
-plt.annotate(f'Máximo 1: {max_amp:.2f} dBm\n@ {max_freq:.3f} MHz',
-             xy=(max_freq, max_amp),
-             xytext=(max_freq+10, max_amp+0.2),
-             arrowprops=dict(arrowstyle='->', color='darkred'),
-             fontsize=20,
-             color='darkred')
-plt.annotate(f'Máximo 2: {max_amp2:.2f} dBm\n@ {max_freq2:.3f} MHz',
-             xy=(max_freq2, max_amp2),
-             xytext=(max_freq2+35, max_amp2),
-             arrowprops=dict(arrowstyle='->', color='darkred'),
-             fontsize=20,
-             color='darkred')
-plt.annotate(f'Máximo 3: {max_amp3:.2f} dBm\n@ {max_freq3:.3f} MHz',
-             xy=(max_freq3, max_amp3),
-             xytext=(max_freq3 + 125, max_amp3+1),
-             arrowprops=dict(arrowstyle='->', color='darkred'),
-             fontsize=20,
-             color='darkred')
-plt.hlines(-20, 0, 1000, 'black')
-plt.annotate('Corte de -20 dBm',
-             xy=(max_freq3, max_amp3),
-             xytext=(80, -19),
-             fontsize=20)
-plt.savefig('plots/sin_25MHz_span_0-1GHz.png')
+# plt.annotate(f'Máximo 1: {max_amp:.2f} dBm\n@ {max_freq:.3f} MHz',
+#              xy=(max_freq, max_amp),
+#              xytext=(max_freq+10, max_amp+0.2),
+#              arrowprops=dict(arrowstyle='->', color='darkred'),
+#              fontsize=20,
+#              color='darkred')
+# plt.annotate(f'Máximo 2: {max_amp2:.2f} dBm\n@ {max_freq2:.3f} MHz',
+#              xy=(max_freq2, max_amp2),
+#              xytext=(max_freq2+35, max_amp2),
+#              arrowprops=dict(arrowstyle='->', color='darkred'),
+#              fontsize=20,
+#              color='darkred')
+# plt.annotate(f'Máximo 3: {max_amp3:.2f} dBm\n@ {max_freq3:.3f} MHz',
+#              xy=(max_freq3, max_amp3),
+#              xytext=(max_freq3 + 125, max_amp3+1),
+#              arrowprops=dict(arrowstyle='->', color='darkred'),
+#              fontsize=20,
+#              color='darkred')
+# plt.hlines(-20, 0, 1000, 'black')
+# plt.annotate('Corte de -20 dBm',
+#              xy=(max_freq3, max_amp3),
+#              xytext=(80, -19),
+#              fontsize=20)
+plt.savefig('plots/sin_25MHz_span_0-1GHz_200MHz.png')
 plt.show()
 
 
@@ -293,5 +312,5 @@ plt.annotate('Corte de -20 dBm',
              xy=(max_freq3, max_amp3),
              xytext=(80, -19),
              fontsize=20)
-#plt.savefig('plots/sin_25MHz_span_0-1GHz.png')
+plt.savefig('plots/square_25MHz.png')
 plt.show()
