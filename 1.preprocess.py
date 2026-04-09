@@ -28,6 +28,17 @@
 #  5.csv   | Rampa         | 5MHz, simetría 100%
 #  6.csv   | Rampa         | 5MHz, simetría 50%
 #
+# Corregido, habían errores en las anotaciónes, queda
+#
+# #  Archivo | Señal         | Config
+# ---------|---------------|---------------------
+#  11.csv  | Onda cuadrada | 25 MHz
+#  3.csv   | Cuadrada      | 25MHz, span 0->1GHz
+#  2.csv   | Sinsoidal     | 25MHz
+#  4.csv   | Sinusoidal    | 5MHz
+#  5.csv   | Rampa         | 5MHz, simetría 100%
+#  6.csv   | Rampa         | 5MHz, simetría 50%
+#
 
 # %% [markdown]
 # Inicialmente importo y pruebo uno a ver cómo queda
@@ -70,7 +81,7 @@ plt.show()
 
 # %%
 measurements = ['11.csv',       '2.csv',           '3.csv',                       '4.csv',          '5.csv',               '6.csv']
-output = ['square_25MHz_M.csv', 'sin_25MHz_M.csv', 'sin_25MHz_span_0-1GHz_M.csv', 'sin_5MHz_M.csv', 'ramp_symm_100_M.csv', 'ramp_symm_50_M.csv']
+output = ['square_25MHz_M.csv', 'sin_25MHz_M.csv', 'square_25MHz_span_0-1GHz_M.csv', 'sin_5MHz_M.csv', 'ramp_symm_100_M.csv', 'ramp_symm_50_M.csv']
 
 # Process all files
 for input_file, output_file in zip(measurements, output):
@@ -78,7 +89,7 @@ for input_file, output_file in zip(measurements, output):
     data = pd.read_csv(f"measurements/{input_file}", skiprows=2, header=None)
     freq_hz = data.iloc[:, 0].values.astype(float)
     amp_dbm = data.iloc[:, 2].values.astype(float)
-    freq_ghz = freq_hz / 1e6
-    processed_data = np.column_stack((freq_ghz, amp_dbm))
-    np.savetxt('signals/'+output_file, processed_data, delimiter=',', header='Frequency_GHz,Amplitude_dBm', comments='')
+    freq_MHz = freq_hz / 1e6
+    processed_data = np.column_stack((freq_MHz, amp_dbm))
+    np.savetxt('signals/'+output_file, processed_data, delimiter=',', header='Frequency_MHz,Amplitude_dBm', comments='')
     print(f"Processed {input_file} -> {output_file}")
